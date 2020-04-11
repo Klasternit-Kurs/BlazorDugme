@@ -1,0 +1,45 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NM
+
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@foreach (Artikal a in lArt)
+{
+	<p><button @onclick="(() => Bla(a))">@a</button></p>
+}
+
+@code
+{
+	public class Artikal
+	{
+
+	}
+
+	List<Artikal> lArt = new List<Artikal>();
+	public void Bla(Artikal x)
+	{
+		Ser.SendAsync("Bar", x.ToString());
+	}
+
+	HubConnection Ser;
+
+	protected override async Task OnInitializedAsync()
+	{
+		Ser = new HubConnectionBuilder().WithUrl(NM.ToAbsoluteUri("/ch")).Build();
+
+		Ser.On<string>("NekaMetoda", s => MetodaNeka(s));
+
+
+		await Ser.StartAsync();
+		Ser.SendAsync("Foo");
+
+	}
+
+	public void MetodaNeka(string zklj)
+	{
+
+		StateHasChanged();
+	}
+}
